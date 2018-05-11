@@ -1368,7 +1368,7 @@ KBEngine.Entity = KBEngine.Class.extend(
 		
 		this.base.newCall();
 		this.base.bundle.writeUint16(methodID);
-		
+		KBEngine.INFO_MSG("call server method[" + methodID + "] args length[" + args.length + "]!");  
 		try
 		{
 			for(var i=0; i<args.length; i++)
@@ -1562,9 +1562,10 @@ KBEngine.EntityCall = function()
 		if(this.type == KBEngine.ENTITYCALL_TYPE_CELL)
 			this.bundle.newMessage(KBEngine.messages.Baseapp_onRemoteCallCellMethodFromClient);
 		else
-			this.bundle.newMessage(KBEngine.messages.Entity_onRemoteMethodCall);
+			KBEngine.DEBUG_MSG("-------------------------------+++++++++++++++++");  
+			this.bundle.newMessage(7);
 
-		this.bundle.writeInt32(this.id);
+		//this.bundle.writeInt32(this.id);
 		
 		return this.bundle;
 	}
@@ -2884,7 +2885,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	this.Client_onImportClientEntityDef = function(stream)
 	{
 		KBEngine.app.createDataTypeFromStreams(stream, true);
-		
+		KBEngine.INFO_MSG("ttttttttttttttttttttttttttttttttttttttttttttt");
 		while(!stream.readEOF())
 		{
 			var scriptmodule_name = stream.readString();
@@ -2924,10 +2925,10 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			{
 				propertysize--;
 				
+				var name = stream.readString();
 				var properUtype = stream.readUint16();
 				var properFlags = stream.readUint32();
 				var aliasID = stream.readInt16();
-				var name = stream.readString();
 				var defaultValStr = stream.readString();
 				var utype = KBEngine.datatypes[stream.readUint16()];
 				var setmethod = null;
@@ -2960,9 +2961,9 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			{
 				methodsize--;
 				
+				var name = stream.readString();
 				var methodUtype = stream.readUint16();
 				var aliasID = stream.readInt16();
-				var name = stream.readString();
 				var argssize = stream.readUint8();
 				var args = [];
 				
@@ -2993,9 +2994,9 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			{
 				base_methodsize--;
 				
+				var name = stream.readString();
 				var methodUtype = stream.readUint16();
 				var aliasID = stream.readInt16();
-				var name = stream.readString();
 				var argssize = stream.readUint8();
 				var args = [];
 				
@@ -3013,9 +3014,9 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			{
 				cell_methodsize--;
 				
+				var name = stream.readString();
 				var methodUtype = stream.readUint16();
 				var aliasID = stream.readInt16();
-				var name = stream.readString();
 				var argssize = stream.readUint8();
 				var args = [];
 				
@@ -3047,9 +3048,10 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 				var name = infos[2];
 				var defaultValStr = infos[3];
 				var utype = infos[4];
-
+				//KBEngine.ERROR_MSG("-------------------------: module(" + name + ") not found!");
 				if(defmethod != undefined)
-					defmethod.prototype[name] = utype.parseDefaultValStr(defaultValStr);
+					//defmethod.prototype[name] = utype.parseDefaultValStr(defaultValStr);
+					defmethod.prototype[name] = 0;
 			};
 
 			for(name in currModuleDefs.methods)
@@ -3069,6 +3071,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		
 		KBEngine.app.onImportEntityDefCompleted();
 	}
+	KBEngine.clientmessages[11] = new KBEngine.Message(11, "Client_onImportClientEntityDef", 0, 0, new Array(), KBEngine.app["Client_onImportClientEntityDef"]);
 
 	this.Client_onVersionNotMatch = function(stream)
 	{
@@ -3088,7 +3091,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	{
 		KBEngine.INFO_MSG("KBEngineApp::onImportEntityDefCompleted: successfully!");
 		KBEngine.app.entitydefImported = true;
-		KBEngine.app.login_baseapp(false);
+		//KBEngine.app.login_baseapp(false);
 	}
 	
 	this.Client_onImportClientMessages = function(msg)
