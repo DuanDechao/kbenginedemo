@@ -1362,7 +1362,7 @@ KBEngine.Entity = KBEngine.Class.extend(
 		
 		if(arguments.length - 1 != args.length)
 		{
-			KBEngine.ERROR_MSG("KBEngine.Entity::baseCall: args(" + (arguments.length - 1) + "!= " + args.length + ") size is error!");  
+			KBEngine.ERROR_MSG("KBEngine.Entity::baseCall(" + arguments[0] + "): args(" + (arguments.length - 1) + "!= " + args.length + ") size is error!");  
 			return;
 		}
 		
@@ -3439,10 +3439,11 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		//KBEngine.INFO_MSG("KBEngineApp::Client_onCreatedProxies: eid(" + eid + "), entityType(" + entityType + ")!");
 		
 		var eid = stream.readUint64();
+		var rid = stream.readUint32();
 		var entity = KBEngine.app.entities[eid];
 		
 		KBEngine.app.entity_uuid = eid;
-		KBEngine.app.entity_id = stream.readUint32();
+		KBEngine.app.entity_id = eid;
 		
 		var entityType = stream.readString();
 		KBEngine.INFO_MSG("KBEngineApp::Client_onCreatedProxies: eid(" + eid + "), entityType(" + entityType + ")!");
@@ -3537,10 +3538,10 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		while(stream.length() > 0)
 		{
 			var utype = 0;
-			if(currModule.usePropertyDescrAlias)
-				utype = stream.readUint8();
-			else
-				utype = stream.readUint16();
+			//if(currModule.usePropertyDescrAlias)
+			//	utype = stream.readUint8();
+			//else
+			utype = stream.readUint16();
 		
 			var propertydata = pdatas[utype];
 			var setmethod = propertydata[5];
@@ -3579,6 +3580,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		var eid = stream.readInt32();
 		KBEngine.app.onUpdatePropertys_(eid, stream);
 	}
+	KBEngine.clientmessages[13] = new KBEngine.Message(11, "Client_onUpdatePropertys", 0, 0, new Array(), KBEngine.app["Client_onUpdatePropertys"]);
 
 	this.onRemoteMethodCall_ = function(eid, stream)
 	{
@@ -3595,7 +3597,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			methodUtype = stream.readUint8();
 		else
 			methodUtype = stream.readUint16();
-		
+		KBEngine.ERROR_MSG("KBEngineApp::Client_onRemoteMethodCall: entityinfo(" + entity.className + "--" + methodUtype +") +++++++++++++++++++++++++++++++!");
 		var methoddata = KBEngine.moduledefs[entity.className].methods[methodUtype];
 		var args = [];
 		var argsdata = methoddata[3];
@@ -3622,9 +3624,12 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onRemoteMethodCall = function(stream)
 	{
-		var eid = stream.readInt32();
+		var eid = stream.readInt64();
+		KBEngine.ERROR_MSG("KBEngineApp::Client_onRemoteMethodCall: entity(" + eid + ") ---------------------------------)!");
 		KBEngine.app.onRemoteMethodCall_(eid, stream);
 	}
+	
+	KBEngine.clientmessages[12] = new KBEngine.Message(12, "Client_onRemoteMethodCall", 0, 0, new Array(), KBEngine.app["Client_onRemoteMethodCall"]);
 	
 	this.Client_onEntityEnterWorld = function(stream)
 	{
