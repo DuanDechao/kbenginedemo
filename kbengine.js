@@ -1560,7 +1560,7 @@ KBEngine.EntityCall = function()
 			this.bundle = new KBEngine.Bundle();
 		
 		if(this.type == KBEngine.ENTITYCALL_TYPE_CELL)
-			this.bundle.newMessage(KBEngine.messages.Baseapp_onRemoteCallCellMethodFromClient);
+			this.bundle.newMessage(8);
 		else
 			KBEngine.DEBUG_MSG("-------------------------------+++++++++++++++++");  
 			this.bundle.newMessage(7);
@@ -3577,7 +3577,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onUpdatePropertys = function(stream)
 	{
-		var eid = stream.readInt32();
+		var eid = stream.readInt64();
 		KBEngine.app.onUpdatePropertys_(eid, stream);
 	}
 	KBEngine.clientmessages[13] = new KBEngine.Message(11, "Client_onUpdatePropertys", 0, 0, new Array(), KBEngine.app["Client_onUpdatePropertys"]);
@@ -3633,20 +3633,20 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onEntityEnterWorld = function(stream)
 	{
-		var eid = stream.readInt32();
+		var eid = stream.readInt64();
 		if(KBEngine.app.entity_id > 0 && eid != KBEngine.app.entity_id)
 			KBEngine.app.entityIDAliasIDList.push(eid)
 		
-		var entityType;
-		if(KBEngine.moduledefs.Length > 255)
-			entityType = stream.readUint16();
-		else
-			entityType = stream.readUint8();
+		//var entityType;
+		//if(KBEngine.moduledefs.Length > 255)
+		entityType = stream.readUint32();
+		//else
+		//	entityType = stream.readUint8();
 		
 		var isOnGround = true;
 		
-		if(stream.length() > 0)
-			isOnGround = stream.readInt8();
+		//if(stream.length() > 0)
+		//	isOnGround = stream.readInt8();
 		
 		entityType = KBEngine.moduledefs[entityType].name;
 		KBEngine.INFO_MSG("KBEngineApp::Client_onEntityEnterWorld: " + entityType + "(" + eid + "), spaceID(" + KBEngine.app.spaceID + "), isOnGround(" + isOnGround + ")!");
@@ -3723,6 +3723,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			}
 		}
 	}
+	KBEngine.clientmessages[14] = new KBEngine.Message(14, "Client_onEntityEnterWorld", 0, 0, new Array(), KBEngine.app["Client_onEntityEnterWorld"]);
 
 	this.Client_onEntityLeaveWorldOptimized = function(stream)
 	{
