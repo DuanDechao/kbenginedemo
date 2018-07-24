@@ -1562,7 +1562,6 @@ KBEngine.EntityCall = function()
 		if(this.type == KBEngine.ENTITYCALL_TYPE_CELL)
 			this.bundle.newMessage(8);
 		else
-			KBEngine.DEBUG_MSG("-------------------------------+++++++++++++++++");  
 			this.bundle.newMessage(7);
 
 		//this.bundle.writeInt32(this.id);
@@ -2650,21 +2649,21 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			
 			if(KBEngine.app.currserver == "loginapp")
 			{
-				if(KBEngine.messages.Loginapp_onClientActiveTick != undefined)
-				{
+				//if(KBEngine.messages.Loginapp_onClientActiveTick != undefined)
+				//{
 					var bundle = new KBEngine.Bundle();
-					bundle.newMessage(KBEngine.messages.Loginapp_onClientActiveTick);
+					bundle.newMessage(9);
 					bundle.send(KBEngine.app);
-				}
+				//}
 			}
 			else
 			{
-				if(KBEngine.messages.Baseapp_onClientActiveTick != undefined)
-				{
+				//if(KBEngine.messages.Baseapp_onClientActiveTick != undefined)
+				//{
 					var bundle = new KBEngine.Bundle();
-					bundle.newMessage(KBEngine.messages.Baseapp_onClientActiveTick);
+					bundle.newMessage(9);
 					bundle.send(KBEngine.app);
-				}
+				//}
 			}
 			
 			KBEngine.app.lastTickTime = dateObject.getTime();
@@ -2681,6 +2680,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		var dateObject = new Date();
 		KBEngine.app.lastTickCBTime = dateObject.getTime();
 	}
+	KBEngine.clientmessages[16] = new KBEngine.Message(16, "Client_onAppActiveTickCB", 0, 0, new Array(), KBEngine.app["Client_onAppActiveTickCB"]);
 
 	/*
 		通过错误id得到错误描述
@@ -3555,7 +3555,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			if(setmethod != null)
 			{
 				// base类属性或者进入世界后cell类属性会触发set_*方法
-				if(flags == 0x00000020 || flags == 0x00000040)
+				if((flags & 0x00200000) > 0 || (flags & 0x00400000) > 0)
 				{
 					if(entity.inited)
 						setmethod.call(entity, oldval);
@@ -3580,7 +3580,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		var eid = stream.readInt64();
 		KBEngine.app.onUpdatePropertys_(eid, stream);
 	}
-	KBEngine.clientmessages[13] = new KBEngine.Message(11, "Client_onUpdatePropertys", 0, 0, new Array(), KBEngine.app["Client_onUpdatePropertys"]);
+	KBEngine.clientmessages[13] = new KBEngine.Message(13, "Client_onUpdatePropertys", 0, 0, new Array(), KBEngine.app["Client_onUpdatePropertys"]);
 
 	this.onRemoteMethodCall_ = function(eid, stream)
 	{
@@ -3625,6 +3625,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	this.Client_onRemoteMethodCall = function(stream)
 	{
 		var eid = stream.readInt64();
+		var m_type = stream.readInt8();
 		KBEngine.ERROR_MSG("KBEngineApp::Client_onRemoteMethodCall: entity(" + eid + ") ---------------------------------)!");
 		KBEngine.app.onRemoteMethodCall_(eid, stream);
 	}
@@ -3805,12 +3806,12 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onEntityEnterSpace = function(stream)
 	{
-		var eid = stream.readInt32();
+		var eid = stream.readInt64();
 		KBEngine.app.spaceID = stream.readUint32();
 		var isOnGround = true;
 		
-		if(stream.length() > 0)
-			isOnGround = stream.readInt8();
+		//if(stream.length() > 0)
+		//	isOnGround = stream.readInt8();
 		
 		var entity = KBEngine.app.entities[eid];
 		if(entity == undefined)
@@ -3825,6 +3826,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		KBEngine.app.entityServerPos.z = entity.position.z;
 		entity.enterSpace();
 	}
+	KBEngine.clientmessages[18] = new KBEngine.Message(18, "Client_onEntityEnterSpace", 0, 0, new Array(), KBEngine.app["Client_onEntityEnterSpace"]);
 	
 	this.Client_onEntityLeaveSpace = function(eid)
 	{
@@ -3922,7 +3924,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 			player.entityLastLocalDir.z = player.direction.z;	
 							
 			var bundle = new KBEngine.Bundle();
-			bundle.newMessage(KBEngine.messages.Baseapp_onUpdateDataFromClient);
+			bundle.newMessage(10);
 			bundle.writeFloat(player.position.x);
 			bundle.writeFloat(player.position.y);
 			bundle.writeFloat(player.position.z);
@@ -4029,15 +4031,18 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		KBEngine.app.clearSpace(false);
 		
 		KBEngine.app.spaceID = stream.readInt32();
+		KBEngine.INFO_MSG("KBEngineApp::Client_initSpaceData: spaceID(" + KBEngine.app.spaceID + ")");
 		while(stream.length() > 0)
 		{
 			var key = stream.readString();
 			var value = stream.readString();
 			KBEngine.app.Client_setSpaceData(KBEngine.app.spaceID, key, value);
+			KBEngine.INFO_MSG("KBEngineApp::Client_initSpaceData: key(" + key + ") value(" + value + ")");
 		}
 		
 		KBEngine.INFO_MSG("KBEngineApp::Client_initSpaceData: spaceID(" + KBEngine.app.spaceID + "), datas(" + KBEngine.app.spacedata + ")!");
 	}
+	KBEngine.clientmessages[15] = new KBEngine.Message(15, "Client_initSpaceData", 0, 0, new Array(), KBEngine.app["Client_initSpaceData"]);
 	
 	this.Client_setSpaceData = function(spaceID, key, value)
 	{
@@ -4090,7 +4095,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 
 	this.Client_onSetEntityPosAndDir = function(stream)
 	{
-		var eid = stream.readInt32();
+		var eid = stream.readInt64();
 		var entity = KBEngine.app.entities[eid];
 		if(entity == undefined)
 		{
@@ -4115,7 +4120,10 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 				
 		entity.set_direction(entity.direction);
 		entity.set_position(entity.position);
+		KBEngine.ERROR_MSG("KBEngineApp::Client_onSetEntityPosAndDir: entity(" + eid + ") pos(" + entity.position.x + "," + entity.position.y + "," + entity.position.z +"!");
+		
 	}
+	KBEngine.clientmessages[17] = new KBEngine.Message(17, "Client_onSetEntityPosAndDir", 0, 0, new Array(), KBEngine.app["Client_onSetEntityPosAndDir"]);
 	
 	this.Client_onUpdateData_ypr = function(stream)
 	{
