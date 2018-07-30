@@ -144,14 +144,14 @@ KBEngine.UINT64 = function(lo, hi)
 		var high = this.hi.toString(16);
 		
 		var result = "";
-		if(this.hi > 0)
-		{
+		//if(this.hi > 0)
+		//{
 			result += high;
 			for(var i = 8 - low.length; i > 0; --i)
 			{
 				result += "0";
 			}
-		}
+		//}
 		result += low;
 		return result;
 	}
@@ -3438,7 +3438,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		//KBEngine.app.entity_uuid = stream.readUint64();
 		//KBEngine.INFO_MSG("KBEngineApp::Client_onCreatedProxies: eid(" + eid + "), entityType(" + entityType + ")!");
 		
-		var eid = stream.readUint64();
+		var eid = stream.readUint64().toString();
 		var rid = stream.readUint32();
 		var entity = KBEngine.app.entities[eid];
 		
@@ -3577,7 +3577,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onUpdatePropertys = function(stream)
 	{
-		var eid = stream.readInt64().toString();
+		var eid = stream.readUint64().toString();
 		KBEngine.app.onUpdatePropertys_(eid, stream);
 	}
 	KBEngine.clientmessages[13] = new KBEngine.Message(13, "Client_onUpdatePropertys", 0, 0, new Array(), KBEngine.app["Client_onUpdatePropertys"]);
@@ -3624,7 +3624,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onRemoteMethodCall = function(stream)
 	{
-		var eid = stream.readInt64().toString();
+		var eid = stream.readUint64().toString();
 		var m_type = stream.readInt8();
 		KBEngine.ERROR_MSG("KBEngineApp::Client_onRemoteMethodCall: entity(" + eid + ") ---------------------------------)!");
 		KBEngine.app.onRemoteMethodCall_(eid, stream);
@@ -3634,7 +3634,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onEntityEnterWorld = function(stream)
 	{
-		var eid = stream.readInt64().toString();
+		var eid = stream.readUint64().toString();
 		if(KBEngine.app.entity_id > 0 && eid != KBEngine.app.entity_id)
 			KBEngine.app.entityIDAliasIDList.push(eid)
 		
@@ -3729,7 +3729,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	this.Client_onEntityLeaveWorldOptimized = function(stream)
 	{
 		//var eid = KBEngine.app.getViewEntityIDFromStream(stream);
-		var eid = stream.readInt64().toString();
+		var eid = stream.readUint64().toString();
 		KBEngine.app.Client_onEntityLeaveWorld(eid);
 	}
 	KBEngine.clientmessages[19] = new KBEngine.Message(19, "Client_onEntityLeaveWorldOptimized", 0, 0, new Array(), KBEngine.app["Client_onEntityLeaveWorldOptimized"]);
@@ -3746,7 +3746,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 		if(entity.inWorld)
 			entity.leaveWorld();
 		
-		if(KBEngine.app.entity_id > 0 && eid != KBEngine.app.entity_id)
+		if(KBEngine.app.entity_id != 0 && eid != KBEngine.app.entity_id)
 		{
 			var newArray0 = [];
 
@@ -3808,7 +3808,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 	
 	this.Client_onEntityEnterSpace = function(stream)
 	{
-		var eid = stream.readInt64().toString();
+		var eid = stream.readUint64().toString();
 		KBEngine.app.spaceID = stream.readUint32();
 		var isOnGround = true;
 		
@@ -4097,7 +4097,7 @@ KBEngine.KBEngineApp = function(kbengineArgs)
 
 	this.Client_onSetEntityPosAndDir = function(stream)
 	{
-		var eid = stream.readInt64().toString();
+		var eid = stream.readUint64().toString();
 		var entity = KBEngine.app.entities[eid];
 		if(entity == undefined)
 		{
