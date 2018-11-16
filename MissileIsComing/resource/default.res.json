@@ -1,0 +1,15 @@
+{
+	"resources": [
+		{
+			"name": "battle_ground_png",
+			"type": "image",
+			"url": "assets/battle_ground.png"
+		}
+	],
+	"groups": [
+		{
+			"name": "preload",
+			"keys": "battle_ground_png"
+		}
+	]
+}

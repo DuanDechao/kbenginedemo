@@ -1,0 +1,6 @@
+{
+	"name": "nipplejs",
+	"compilerVersion": "5.2.12",
+	// 新增一个字段
+    "typings": "typings/nipplejs.d.ts"
+}

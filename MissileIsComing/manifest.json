@@ -1,0 +1,27 @@
+{
+	"initial": [
+		"libs/modules/egret/egret.js",
+		"libs/modules/egret/egret.web.js",
+		"libs/modules/game/game.js",
+		"libs/modules/tween/tween.js",
+		"libs/modules/assetsmanager/assetsmanager.js",
+		"libs/modules/eui/eui.js",
+		"libs/modules/experimental/experimental.js",
+		"libs/modules/dragonBones/dragonBones.js",
+		"libs/modules/socket/socket.js",
+		"libs/modules/egretia-sdk/egretia-sdk.js",
+		"libs/modules/promise/promise.js",
+		"libs/nipplejs/nipplejs.js"
+	],
+	"game": [
+		"bin-debug/AssetAdapter.js",
+		"bin-debug/Avatar.js",
+		"bin-debug/BattleUI.js",
+		"bin-debug/GameScene.js",
+		"bin-debug/Joystick.js",
+		"bin-debug/LoadingUI.js",
+		"bin-debug/Main.js",
+		"bin-debug/Platform.js",
+		"bin-debug/ThemeAdapter.js"
+	]
+}
